@@ -417,12 +417,14 @@ export const FeedItemActions: FC<FeedItemActionsProps> = ({
     return score.toFixed(1);
   };
 
-  // Check if we have open bounties
-  const hasOpenBounties = bounties && bounties.filter((b) => b.status === 'OPEN').length > 0;
+  // Check if we have active bounties (open or in review period)
+  const hasOpenBounties =
+    bounties &&
+    bounties.filter((b) => b.status === 'OPEN' || b.status === 'REVIEW_PERIOD').length > 0;
 
-  // Calculate total bounty amount for open bounties
+  // Calculate total bounty amount for active bounties
   const totalBountyAmount = bounties
-    .filter((b) => b.status === 'OPEN')
+    .filter((b) => b.status === 'OPEN' || b.status === 'REVIEW_PERIOD')
     .reduce((total, bounty) => {
       const amount = parseFloat(bounty.totalAmount || bounty.amount || '0');
       return total + amount;

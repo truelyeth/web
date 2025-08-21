@@ -12,6 +12,26 @@ export const isOpenBounty = (bounty: Bounty): boolean => {
 };
 
 /**
+ * Checks if a bounty is in review period and not a contribution
+ * @param bounty The bounty to check
+ * @returns True if the bounty is in review period and not a contribution
+ */
+export const isReviewPeriodBounty = (bounty: Bounty): boolean => {
+  // A bounty is not a contribution if it doesn't have a parent bounty
+  const isContribution = bounty.raw && !!bounty.raw.parent;
+  return bounty.status === 'REVIEW_PERIOD' && !isContribution;
+};
+
+/**
+ * Checks if a bounty is active (open or in review period) and not a contribution
+ * @param bounty The bounty to check
+ * @returns True if the bounty is active and not a contribution
+ */
+export const isActiveBounty = (bounty: Bounty): boolean => {
+  return isOpenBounty(bounty) || isReviewPeriodBounty(bounty);
+};
+
+/**
  * Checks if a bounty is closed and not a contribution
  * @param bounty The bounty to check
  * @returns True if the bounty is closed and not a contribution
@@ -380,9 +400,9 @@ export const extractBountyAvatars = (
   bounties: Bounty[],
   openOnly: boolean = true
 ): BountyAvatar[] => {
-  // Filter bounties if openOnly is true
+  // Filter bounties if openOnly is true (include both OPEN and REVIEW_PERIOD)
   const filteredBounties = openOnly
-    ? bounties.filter((bounty) => bounty.status === 'OPEN')
+    ? bounties.filter((bounty) => bounty.status === 'OPEN' || bounty.status === 'REVIEW_PERIOD')
     : bounties;
 
   // Extract avatars from each bounty
