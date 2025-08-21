@@ -41,6 +41,14 @@ const NOTIFICATION_TYPE_MAP: Record<string, NotificationTypeInfo> = {
     icon: 'earn1',
     useAvatar: true,
   },
+  BOUNTY_REVIEW_PERIOD_STARTED: {
+    icon: 'openGrant',
+    useAvatar: false,
+  },
+  BOUNTY_REVIEW_PERIOD_ENDING_SOON: {
+    icon: 'openGrant',
+    useAvatar: false,
+  },
   FLAGGED_CONTENT_VERDICT: {
     icon: 'report',
     useAvatar: false,
@@ -192,7 +200,9 @@ export function formatNavigationUrl(notification: Notification): string | undefi
       notification.type === 'BOUNTY_FOR_YOU' ||
       notification.type === 'BOUNTY_EXPIRING_SOON' ||
       notification.type === 'BOUNTY_HUB_EXPIRING_SOON' ||
-      notification.type === 'BOUNTY_PAYOUT'
+      notification.type === 'BOUNTY_PAYOUT' ||
+      notification.type === 'BOUNTY_REVIEW_PERIOD_STARTED' ||
+      notification.type === 'BOUNTY_REVIEW_PERIOD_ENDING_SOON'
     ) {
       basePath += '/bounties';
     }
@@ -314,6 +324,18 @@ export function formatNotificationMessage(
 
     case 'PREREGISTRATION_UPDATE':
       return `${userName} updated proposal "${truncatedTitle}"`;
+
+    case 'BOUNTY_REVIEW_PERIOD_STARTED':
+      // Check if the recipient is the bounty creator by comparing with action user
+      // In the backend, action_user is set to bounty_creator for all these notifications
+      if (actionUser && notification.recipient && actionUser.id === notification.recipient.id) {
+        return `Your bounty has closed - you have 10 days to select the awardees for "${truncatedTitle}"`;
+      } else {
+        return `The bounty you answered has ended. The creator has up to 10 days to award the submissions for "${truncatedTitle}"`;
+      }
+
+    case 'BOUNTY_REVIEW_PERIOD_ENDING_SOON':
+      return `Your bounty review period ends in 24 hours! Award your bounty now or it will be automatically refunded for "${truncatedTitle}"`;
 
     default:
       console.warn(`Unhandled notification type: ${type}`);
