@@ -1,6 +1,8 @@
 import { BaseTransformer } from './transformer';
 import { User, transformUser } from './user';
 
+export const BOUNTY_GRACE_PERIOD_DAYS = 10;
+
 export type BountyType = 'REVIEW' | 'ANSWER' | 'BOUNTY' | 'GENERIC_COMMENT';
 export type SolutionStatus = 'AWARDED' | 'PENDING';
 export type ContributionStatus = 'ACTIVE' | 'REFUNDED';
@@ -28,7 +30,7 @@ export interface BountyContribution {
 export interface Bounty {
   id: number;
   amount: string;
-  status: 'OPEN' | 'CLOSED';
+  status: 'OPEN' | 'CLOSED' | 'CANCELLED' | 'EXPIRED' | 'REVIEW_PERIOD';
   expirationDate?: string;
   bountyType: BountyType;
   createdBy: User;

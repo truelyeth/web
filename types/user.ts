@@ -60,7 +60,7 @@ const baseTransformUser = (raw: any): User => {
   }
 
   return {
-    id: raw.id || 0,
+    id: raw.id ? Number(raw.id) : 0,
     email: raw.email || '',
     firstName: raw.first_name || '',
     lastName: raw.last_name || '',
