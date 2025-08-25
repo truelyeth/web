@@ -329,14 +329,24 @@ export function formatNotificationMessage(
     case 'BOUNTY_REVIEW_PERIOD_STARTED':
       const isCreator =
         actionUser && notification.recipient && actionUser.id === notification.recipient.id;
-      const daysRemaining = notification.extra?.days_remaining || 10;
+      const daysRemaining = notification.extra?.days_remaining;
+
+      if (!daysRemaining) {
+        return isCreator
+          ? `Your bounty has closed - review period has started for "${truncatedTitle}"`
+          : `The bounty you answered has ended. The creator is reviewing submissions for "${truncatedTitle}"`;
+      }
 
       return isCreator
         ? `Your bounty has closed - you have ${daysRemaining} day${daysRemaining > 1 ? 's' : ''} to select the awardees for "${truncatedTitle}"`
         : `The bounty you answered has ended. The creator has up to ${daysRemaining} day${daysRemaining > 1 ? 's' : ''} to award the submissions for "${truncatedTitle}"`;
 
     case 'BOUNTY_REVIEW_PERIOD_ENDING_SOON':
-      const hoursRemaining = notification.extra?.hours_remaining || 24;
+      const hoursRemaining = notification.extra?.hours_remaining;
+
+      if (!hoursRemaining) {
+        return `Your bounty review period is ending soon! Award your bounty now or it will be automatically refunded for "${truncatedTitle}"`;
+      }
 
       return `Your bounty review period ends in ${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}! Award your bounty now or it will be automatically refunded for "${truncatedTitle}"`;
     default:
